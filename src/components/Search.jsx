@@ -2,7 +2,7 @@ import React from 'react'
 import { Context } from '../Context';
 
 function Search() {
-  const {getRandomMeal, getMealStartedWith} = React.useContext(Context)
+  const {getRandomMeal, setSearchTerm} = React.useContext(Context)
   const [text, setText] = React.useState('')
 
   function handleChange(event) {
@@ -11,9 +11,10 @@ function Search() {
 
   function handleSubmit(e) {
     e.preventDefault()
-    getMealStartedWith(text)
+    setSearchTerm(text)
   }
 
+  // random is done
   function invokeTheRandomFunction() {
     setText('')
     getRandomMeal()

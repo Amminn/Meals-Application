@@ -16,6 +16,7 @@ function ContextProvider({children}) {
 
   const [meals, setMeals] = React.useState([])
   const [loading, setLoading] = React.useState(false)
+  const [error, setError] = React.useState(false)
   const [showModal, setShowModal] = React.useState(false)
   const [selectedMeal, setSelectedMeal] = React.useState(null)
   const [favoriteMeal, setFavoriteMeal] = React.useState(getFavoritesFromLocalStorage())
@@ -27,6 +28,7 @@ function ContextProvider({children}) {
   const [searchTerm, setSearchTerm] = React.useState(allMealsUrl)
   
   const fetchData = async(url) => {
+    setError(false)
     setLoading(true)
     try {
       const response = await fetch(url)
@@ -35,27 +37,32 @@ function ContextProvider({children}) {
         setMeals(data.meals)
       }
     } catch(error) {
+      setError(true)
+      console.log(e.response)
       setMeals([])
-      // console.log(error)
     }
     return setLoading(false)
   }
 
   function getRandomMeal() {
     setSearchTerm(randomMealUrl)
-    fetchData(searchTerm)
+    fetchData(randomMealUrl) // i had to add it here, to make the app gives new meals
+    // every times we click on the random btn
   }
 
-  function getMealStartedWith(letter) {
-    setSearchTerm(letter)    
-    if(letter.length === 0) {
+  React.useEffect(() => {
+    if(searchTerm.length === 0) {
       fetchData(`${allMealsUrl}`)
-    } else if(letter.length === 1) {
-      fetchData(`${mealsStartedWithLetter}${letter}`)
-    } else if (letter.length >= 1) {
-      fetchData(`${allMealsUrl}${letter}`)
+    } else if(searchTerm.length === 1) {
+      fetchData(`${mealsStartedWithLetter}${searchTerm}`)
+    } else if (searchTerm === allMealsUrl) {
+      fetchData(allMealsUrl)
+    } else if (searchTerm === randomMealUrl) {
+      fetchData(randomMealUrl)
+    } else if (searchTerm.length > 1) {
+      fetchData(`${allMealsUrl}${searchTerm}`)
     }
-  }
+  }, [searchTerm])
 
   function selectMeal(idMeal) {
     function changeState() {
@@ -102,12 +109,13 @@ function ContextProvider({children}) {
     }
   }
 
-  React.useEffect(() => { 
-    fetchData(searchTerm)
-  }, [searchTerm])
+  React.useEffect(() => {
+    if (!searchTerm) return
+    fetchData(allMealsUrl)
+  }, [])
 
   return (
-    <Context.Provider value={{meals, loading, getRandomMeal, getMealStartedWith, showModal, selectMeal, selectedMeal, closeModal, favoriteMeal, addToFavorite, removeFavorite}}>
+    <Context.Provider value={{meals, loading, getRandomMeal, showModal, selectMeal, selectedMeal, closeModal, favoriteMeal, addToFavorite, removeFavorite, setSearchTerm, error}}>
       {children}
     </Context.Provider>
   )

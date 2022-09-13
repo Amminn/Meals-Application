@@ -4,7 +4,7 @@ import {BsHeartFill} from 'react-icons/bs'
 import {BsHeart} from 'react-icons/bs'
 
 function Meals() {
-  const {meals, loading, selectMeal, addToFavorite, favoriteMeal} = React.useContext(Context)
+  const {meals, loading, error, selectMeal, addToFavorite, favoriteMeal} = React.useContext(Context)
 
   function checkIfFavoriteMeal(idMeal) {
     let result = favoriteMeal.some(item => item.idMeal === idMeal)
@@ -30,8 +30,8 @@ function Meals() {
 
   return (
     <section className='section-center'>
-      {loading ? (<h4>Loading...</h4>) :
-      (meals.length === 0) ? (<h4>The Meal you are Looking For is Not Found!</h4>) : mealsRender}
+      {(error) ? (<h4>The Meal you are Looking For is Not Found!</h4>) :
+       loading ? (<h4>Loading...</h4>) : mealsRender}
     </section>
   )
 }
