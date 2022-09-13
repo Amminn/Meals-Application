@@ -1,13 +1,24 @@
 import React from 'react'
 const Context = React.createContext()
 
+const getFavoritesFromLocalStorage = () => {
+  let favorites = localStorage.getItem('favorites');
+  if (favorites) {
+    favorites = JSON.parse(localStorage.getItem('favorites'))
+  }
+  else {
+    favorites = []
+  }
+  return favorites
+}
+
 function ContextProvider({children}) {
 
   const [meals, setMeals] = React.useState([])
   const [loading, setLoading] = React.useState(false)
   const [showModal, setShowModal] = React.useState(false)
   const [selectedMeal, setSelectedMeal] = React.useState(null)
-  const [favoriteMeal, setFavoriteMeal] = React.useState(JSON.parse(localStorage.getItem("favoriteMeal") || []))
+  const [favoriteMeal, setFavoriteMeal] = React.useState(getFavoritesFromLocalStorage())
   
   const randomMealUrl = 'https://www.themealdb.com/api/json/v1/1/random.php'
   const allMealsUrl = 'https://www.themealdb.com/api/json/v1/1/search.php?s='
